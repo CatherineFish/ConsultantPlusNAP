@@ -6,34 +6,43 @@
 #include <locale> 
 #include <functional>
 #include <cctype>
-
+#include <exception>
 #include <iostream>
+
 
 // function to convert char * to wstring in lowercase
 std::wstring strToWstringLower(std::string word)
 {
-    setlocale(LC_ALL, "ru_RU.UTF-8");
-    
-    //setup converter
-    using convert_type = std::codecvt_utf8<typename std::wstring::value_type>;
-    std::wstring_convert<convert_type, typename std::wstring::value_type> converter;
-
-    //use converter
-    std::wstring wordWString = converter.from_bytes(word);
-    
-    // transform to lowecase
-    std::transform(wordWString.begin(), wordWString.end(), wordWString.begin(), 
-                    [](wchar_t c)
-                    {
-                        return std::tolower<wchar_t>(c, std::locale("ru_RU.UTF-8"));
-                    }
-    );
-
-    // remove non alpha character in end of word 
-    if (!std::isalpha(*std::prev(wordWString.end()), std::locale("ru_RU.UTF-8")))
+    std::wstring wordWString;   
+    try
     {
-        wordWString.erase(std::prev(wordWString.end()));
-    }
+        setlocale(LC_ALL, "ru_RU.UTF-8");
+    
+        //setup converter
+        using convert_type = std::codecvt_utf8<typename std::wstring::value_type>;
+        std::wstring_convert<convert_type, typename std::wstring::value_type> converter;
+
+        //use converter
+        wordWString = converter.from_bytes(word);
+    
+        // transform to lowecase
+        std::transform(wordWString.begin(), wordWString.end(), wordWString.begin(), 
+                        [](wchar_t c)
+                        {
+                            return std::tolower<wchar_t>(c, std::locale("ru_RU.UTF-8"));
+                        }
+        );
+
+        // remove non alpha character in end of word 
+        if (!std::isalpha(*std::prev(wordWString.end()), std::locale("ru_RU.UTF-8")))
+        {
+            wordWString.erase(std::prev(wordWString.end()));
+        }    
+    } catch (const std::exception& e)
+    {
+        std::cout << "Error while converting char * to std::wstring" << std::endl;
+        exit(0);
+    }    
 
     return wordWString;
 }
