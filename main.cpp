@@ -8,7 +8,7 @@
 int main (int argc, char *argv[])//бесконечный ввод
 {
     // checking argument number
-    if (argc < 5) 
+    if (argc < 5 or argc > 5) 
     {
         std::cout << "Incorrect number of arguments" << std::endl;
         return 0; // correct end of app, but with error message for user   
